@@ -3043,3 +3043,9 @@ Sau đó **đặc tả từng UC**, trong đó các **Business Rule và Exceptio
 
 **BR → Business Process → FR → Business Rule/Exception → Data Model → Use Case → Use Case Specification.**
 
+BƯỚC 12 :  THIẾT KẾ  acceptance criterias CHO BIẾT BUSSINESS REQUIRMENT ĐƯỢC KẾT THÚC 
+BƯỚC 13 : TRUY XUẤT NGUỒN GỐC YÊU CẦU 
+TẠO BẢNG MA TRẬN TRUY XUẤT YÊU CẦU (RTM)
+TRONG BẢNG NÀY CÓ CỘT : BUSINESS GOAL , MÃ BR , BUSINESS REQUIRMENT (BR01,02...) , CỘT FR , CỘT USECASE , CỘT AC 
+CHO BIẾT BR NÀO ĐƯỢC PHÂN RẢ THÀNH FR , (CÁC FR NÀY ĐƯỢC ỨNG AC NÀO , XÂY DỰNG BỘ TEST GIỮA PHÂN TÍCH YÊU CẦU )
+CHO BẢNG CUỐI CÙNG 
