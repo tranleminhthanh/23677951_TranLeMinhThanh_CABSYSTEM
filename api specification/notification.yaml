@@ -1,0 +1,246 @@
+openapi: 3.0.3
+info:
+  title: Notification API
+  description: API quản lý và gửi thông báo cho khách hàng và tài xế
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/school-120/Notification/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: http://localhost:3000/api
+paths:
+  /notifications/booking-received:
+    post:
+      tags:
+      - Notification
+      summary: Notify booking received
+      description: |
+        Gửi thông báo cho khách hàng khi
+        hệ thống đã tiếp nhận yêu cầu đặt xe.
+      operationId: notifyBookingReceived
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationRequest"
+        required: true
+      responses:
+        "200":
+          description: Đã gửi thông báo tiếp nhận đặt xe
+        "400":
+          description: Thông tin thông báo không hợp lệ
+  /notifications/driver-assigned:
+    post:
+      tags:
+      - Notification
+      summary: Notify driver assigned
+      description: |
+        Gửi thông báo cho khách hàng khi
+        một tài xế đã nhận chuyến.
+      operationId: notifyDriverAssigned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationRequest"
+        required: true
+      responses:
+        "200":
+          description: Đã gửi thông báo tài xế nhận chuyến
+        "400":
+          description: Thông tin thông báo không hợp lệ
+  /notifications/driver-arrived:
+    post:
+      tags:
+      - Notification
+      summary: Notify driver arrived
+      description: |
+        Gửi thông báo cho khách hàng khi
+        tài xế đã đến điểm đón.
+      operationId: notifyDriverArrived
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationRequest"
+        required: true
+      responses:
+        "200":
+          description: Đã gửi thông báo tài xế đã đến điểm đón
+        "400":
+          description: Thông tin thông báo không hợp lệ
+  /notifications/trip-completed:
+    post:
+      tags:
+      - Notification
+      summary: Notify trip completed
+      description: |
+        Gửi thông báo cho khách hàng khi
+        chuyến xe đã hoàn thành.
+      operationId: notifyTripCompleted
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationRequest"
+        required: true
+      responses:
+        "200":
+          description: Đã gửi thông báo chuyến xe hoàn thành
+        "400":
+          description: Thông tin thông báo không hợp lệ
+  /notifications/payment-result:
+    post:
+      tags:
+      - Notification
+      summary: Notify payment result
+      description: |
+        Gửi thông báo cho khách hàng về kết quả
+        thanh toán của chuyến xe.
+      operationId: notifyPaymentResult
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentNotification"
+        required: true
+      responses:
+        "200":
+          description: Đã gửi thông báo kết quả thanh toán
+        "400":
+          description: Thông tin thanh toán không hợp lệ
+  /notifications/new-trip:
+    post:
+      tags:
+      - Notification
+      summary: Notify new trip
+      description: |
+        Gửi thông báo cho tài xế khi
+        có chuyến xe mới phù hợp.
+      operationId: notifyNewTrip
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverTripNotification"
+        required: true
+      responses:
+        "200":
+          description: Đã gửi thông báo chuyến mới cho tài xế
+        "400":
+          description: Thông tin chuyến xe không hợp lệ
+  /notifications/send:
+    post:
+      tags:
+      - Notification
+      summary: Send notification
+      description: |
+        Gửi thông báo thông qua một kênh được lựa chọn.
+
+        Hệ thống có thể hỗ trợ nhiều kênh thông báo
+        và có thể bổ sung thêm kênh trong tương lai.
+      operationId: sendNotification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationRequest"
+        required: true
+      responses:
+        "200":
+          description: Đã gửi thông báo thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationResponse"
+        "400":
+          description: Thông tin thông báo không hợp lệ
+        "500":
+          description: Không thể gửi thông báo
+components:
+  schemas:
+    NotificationRequest:
+      required:
+      - channel
+      - message
+      - recipientId
+      type: object
+      properties:
+        recipientId:
+          type: string
+          description: Mã người nhận thông báo
+          example: C001
+        message:
+          type: string
+          description: Nội dung thông báo
+          example: Tài xế đã nhận chuyến của bạn
+        channel:
+          type: string
+          example: PUSH
+          enum:
+          - PUSH
+          - SMS
+          - EMAIL
+    PaymentNotification:
+      required:
+      - paymentStatus
+      - recipientId
+      - tripId
+      type: object
+      properties:
+        recipientId:
+          type: string
+          description: Mã khách hàng nhận thông báo
+          example: C001
+        tripId:
+          type: string
+          description: Mã chuyến xe
+          example: TR001
+        paymentStatus:
+          type: string
+          example: SUCCESS
+          enum:
+          - SUCCESS
+          - FAILED
+        message:
+          type: string
+          description: Nội dung kết quả thanh toán
+          example: Thanh toán chuyến xe thành công
+    DriverTripNotification:
+      required:
+      - driverId
+      - tripId
+      type: object
+      properties:
+        driverId:
+          type: string
+          description: Mã tài xế
+          example: D001
+        tripId:
+          type: string
+          description: Mã chuyến xe mới
+          example: TR001
+        pickupLocation:
+          type: string
+          description: Địa điểm đón khách
+          example: "123 Nguyen Hue, Quan 1"
+        destination:
+          type: string
+          description: Địa điểm trả khách
+          example: "456 Dien Bien Phu, Quan 3"
+    NotificationResponse:
+      type: object
+      properties:
+        notificationId:
+          type: string
+          description: Mã thông báo
+          example: N001
+        status:
+          type: string
+          example: SENT
+          enum:
+          - SENT
+          - FAILED
+        message:
+          type: string
+          description: Kết quả gửi thông báo
+          example: Notification sent successfully
