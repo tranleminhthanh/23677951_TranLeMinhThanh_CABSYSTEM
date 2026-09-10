@@ -1,0 +1,593 @@
+# =========================================================
+# OPERATION API
+# Quản lý vận hành hệ thống CAB
+# =========================================================
+
+openapi: 3.0.3
+
+# =========================================================
+# THÔNG TIN API
+# =========================================================
+
+info:
+  title: Operation API
+  description: API hỗ trợ quản lý và giám sát hoạt động vận hành của hệ thống CAB
+  version: 1.0.0
+
+# Địa chỉ server của hệ thống
+servers:
+  - url: http://localhost:3000/api
+
+
+# =========================================================
+# DANH SÁCH API
+# =========================================================
+
+paths:
+
+  # =======================================================
+  # XEM TỔNG QUAN HOẠT ĐỘNG
+  #
+  # Cho phép nhân viên quản lý theo dõi tình trạng
+  # hoạt động hiện tại của hệ thống.
+  # =======================================================
+
+  /operations/dashboard:
+    get:
+
+      tags:
+        - Operation
+
+      summary: Get operation dashboard
+
+      description: |
+        Lấy thông tin tổng quan về hoạt động
+        của hệ thống CAB.
+
+        Thông tin có thể bao gồm:
+        - Số chuyến đang thực hiện
+        - Số chuyến đang chờ tài xế
+        - Số tài xế đang hoạt động
+        - Số tài xế đang rảnh
+        - Số chuyến bị hủy
+
+      operationId: getOperationDashboard
+
+      responses:
+
+        # Lấy dữ liệu thành công
+        '200':
+          description: Lấy thông tin vận hành thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationDashboard'
+
+
+  # =======================================================
+  # XEM DANH SÁCH CHUYẾN ĐANG HOẠT ĐỘNG
+  # =======================================================
+
+  /operations/trips:
+    get:
+
+      tags:
+        - Operation
+
+      summary: Get active trips
+
+      description: |
+        Lấy danh sách các chuyến xe đang hoạt động
+        để nhân viên vận hành theo dõi.
+
+      operationId: getActiveTrips
+
+      # Bộ lọc trạng thái chuyến
+      parameters:
+
+        - name: status
+          in: query
+          required: false
+          description: Trạng thái chuyến xe cần xem
+          schema:
+            type: string
+            enum:
+              - REQUESTED
+              - ASSIGNED
+              - IN_PROGRESS
+              - COMPLETED
+              - CANCELLED
+
+          example: IN_PROGRESS
+
+      responses:
+
+        # Lấy danh sách thành công
+        '200':
+          description: Lấy danh sách chuyến xe thành công
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperationTrip'
+
+
+  # =======================================================
+  # XEM CHI TIẾT CHUYẾN XE
+  # =======================================================
+
+  /operations/trips/{tripId}:
+    get:
+
+      tags:
+        - Operation
+
+      summary: Get trip operation details
+
+      description: |
+        Xem thông tin chi tiết của một chuyến xe
+        phục vụ cho việc giám sát và xử lý vận hành.
+
+      operationId: getTripOperationDetails
+
+      parameters:
+
+        # Mã chuyến xe
+        - name: tripId
+          in: path
+          required: true
+          description: Mã định danh của chuyến xe
+          schema:
+            type: string
+
+          example: TR001
+
+      responses:
+
+        # Tìm thấy chuyến
+        '200':
+          description: Lấy thông tin chuyến xe thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationTrip'
+
+        # Không tìm thấy chuyến
+        '404':
+          description: Không tìm thấy chuyến xe
+
+
+  # =======================================================
+  # THEO DÕI TÀI XẾ ĐANG HOẠT ĐỘNG
+  # =======================================================
+
+  /operations/drivers:
+    get:
+
+      tags:
+        - Operation
+
+      summary: Get driver operation status
+
+      description: |
+        Lấy danh sách tài xế và trạng thái hoạt động
+        hiện tại để nhân viên vận hành theo dõi.
+
+      operationId: getDriverOperationStatus
+
+      parameters:
+
+        # Lọc theo trạng thái tài xế
+        - name: status
+          in: query
+          required: false
+          description: Trạng thái hoạt động của tài xế
+          schema:
+            type: string
+            enum:
+              - ONLINE
+              - OFFLINE
+              - BUSY
+              - AVAILABLE
+
+          example: AVAILABLE
+
+      responses:
+
+        # Lấy danh sách thành công
+        '200':
+          description: Lấy trạng thái tài xế thành công
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperationDriver'
+
+
+  # =======================================================
+  # CẬP NHẬT TRẠNG THÁI VẬN HÀNH CỦA CHUYẾN
+  # =======================================================
+
+  /operations/trips/{tripId}/status:
+    put:
+
+      tags:
+        - Operation
+
+      summary: Update trip operation status
+
+      description: |
+        Cập nhật trạng thái vận hành của chuyến xe
+        trong quá trình theo dõi và xử lý.
+
+      operationId: updateTripOperationStatus
+
+      parameters:
+
+        # Mã chuyến
+        - name: tripId
+          in: path
+          required: true
+          description: Mã định danh của chuyến xe
+          schema:
+            type: string
+
+          example: TR001
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTripStatusRequest'
+
+            example:
+              status: IN_PROGRESS
+
+      responses:
+
+        # Cập nhật thành công
+        '200':
+          description: Cập nhật trạng thái chuyến xe thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationTrip'
+
+        # Dữ liệu không hợp lệ
+        '400':
+          description: Trạng thái chuyến xe không hợp lệ
+
+        # Không tìm thấy chuyến
+        '404':
+          description: Không tìm thấy chuyến xe
+
+
+  # =======================================================
+  # XỬ LÝ CHUYẾN XE BỊ SỰ CỐ
+  # =======================================================
+
+  /operations/incidents:
+    post:
+
+      tags:
+        - Operation
+
+      summary: Create operation incident
+
+      description: |
+        Ghi nhận một sự cố phát sinh trong quá trình
+        vận hành chuyến xe.
+
+        Ví dụ:
+        - Tài xế gặp sự cố
+        - Phương tiện gặp vấn đề
+        - Chuyến xe bị gián đoạn
+
+      operationId: createOperationIncident
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentRequest'
+
+            example:
+              tripId: TR001
+              driverId: D001
+              type: VEHICLE_PROBLEM
+              description: "Vehicle has a technical problem"
+
+      responses:
+
+        # Ghi nhận thành công
+        '201':
+          description: Ghi nhận sự cố thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+
+        # Dữ liệu không hợp lệ
+        '400':
+          description: Thông tin sự cố không hợp lệ
+
+
+# =========================================================
+# COMPONENTS
+# =========================================================
+
+components:
+
+  schemas:
+
+    # =====================================================
+    # THÔNG TIN TỔNG QUAN VẬN HÀNH
+    # =====================================================
+
+    OperationDashboard:
+      type: object
+
+      properties:
+
+        # Số chuyến đang thực hiện
+        activeTrips:
+          type: integer
+          description: Số chuyến xe đang thực hiện
+          example: 25
+
+        # Số chuyến đang chờ tài xế
+        waitingTrips:
+          type: integer
+          description: Số chuyến đang chờ được phân công tài xế
+          example: 5
+
+        # Số tài xế đang hoạt động
+        onlineDrivers:
+          type: integer
+          description: Số tài xế đang trực tuyến
+          example: 80
+
+        # Số tài xế sẵn sàng nhận chuyến
+        availableDrivers:
+          type: integer
+          description: Số tài xế đang sẵn sàng nhận chuyến
+          example: 45
+
+        # Số chuyến bị hủy
+        cancelledTrips:
+          type: integer
+          description: Số chuyến xe bị hủy
+          example: 3
+
+
+    # =====================================================
+    # THÔNG TIN CHUYẾN XE PHỤC VỤ VẬN HÀNH
+    # =====================================================
+
+    OperationTrip:
+      type: object
+
+      properties:
+
+        # Mã chuyến
+        tripId:
+          type: string
+          description: Mã định danh của chuyến xe
+          example: TR001
+
+        # Mã khách hàng
+        customerId:
+          type: string
+          description: Mã khách hàng thực hiện chuyến
+          example: C001
+
+        # Mã tài xế
+        driverId:
+          type: string
+          description: Mã tài xế được phân công
+          example: D001
+
+        # Mã phương tiện
+        vehicleId:
+          type: string
+          description: Mã phương tiện sử dụng cho chuyến
+          example: V001
+
+        # Điểm đón
+        pickupLocation:
+          type: string
+          description: Địa điểm đón khách
+          example: "123 Nguyen Hue, District 1"
+
+        # Điểm đến
+        destination:
+          type: string
+          description: Địa điểm trả khách
+          example: "456 Dien Bien Phu, District 3"
+
+        # Trạng thái chuyến
+        status:
+          type: string
+          description: Trạng thái hiện tại của chuyến xe
+          enum:
+            - REQUESTED
+            - ASSIGNED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED
+
+          example: IN_PROGRESS
+
+
+    # =====================================================
+    # THÔNG TIN TÀI XẾ PHỤC VỤ VẬN HÀNH
+    # =====================================================
+
+    OperationDriver:
+      type: object
+
+      properties:
+
+        # Mã tài xế
+        driverId:
+          type: string
+          description: Mã định danh của tài xế
+          example: D001
+
+        # Tên tài xế
+        driverName:
+          type: string
+          description: Họ và tên tài xế
+          example: "Nguyen Van B"
+
+        # Trạng thái tài xế
+        status:
+          type: string
+          description: Trạng thái hoạt động hiện tại của tài xế
+          enum:
+            - ONLINE
+            - OFFLINE
+            - BUSY
+            - AVAILABLE
+
+          example: AVAILABLE
+
+        # Mã phương tiện
+        vehicleId:
+          type: string
+          description: Mã phương tiện được gắn với tài xế
+          example: V001
+
+
+    # =====================================================
+    # DỮ LIỆU CẬP NHẬT TRẠNG THÁI CHUYẾN
+    # =====================================================
+
+    UpdateTripStatusRequest:
+      type: object
+
+      required:
+        - status
+
+      properties:
+
+        # Trạng thái mới
+        status:
+          type: string
+          description: Trạng thái mới của chuyến xe
+          enum:
+            - REQUESTED
+            - ASSIGNED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED
+
+          example: IN_PROGRESS
+
+
+    # =====================================================
+    # DỮ LIỆU GHI NHẬN SỰ CỐ
+    # =====================================================
+
+    IncidentRequest:
+      type: object
+
+      required:
+        - tripId
+        - type
+        - description
+
+      properties:
+
+        # Mã chuyến
+        tripId:
+          type: string
+          description: Mã chuyến xe xảy ra sự cố
+          example: TR001
+
+        # Mã tài xế
+        driverId:
+          type: string
+          description: Mã tài xế liên quan đến sự cố
+          example: D001
+
+        # Loại sự cố
+        type:
+          type: string
+          description: Loại sự cố phát sinh
+          enum:
+            - VEHICLE_PROBLEM
+            - DRIVER_PROBLEM
+            - CUSTOMER_PROBLEM
+            - OTHER
+
+          example: VEHICLE_PROBLEM
+
+        # Mô tả sự cố
+        description:
+          type: string
+          description: Mô tả chi tiết sự cố
+          example: "Vehicle has a technical problem"
+
+
+    # =====================================================
+    # THÔNG TIN SỰ CỐ
+    # =====================================================
+
+    Incident:
+      type: object
+
+      properties:
+
+        # Mã sự cố
+        incidentId:
+          type: string
+          description: Mã định danh của sự cố
+          example: INC001
+
+        # Mã chuyến
+        tripId:
+          type: string
+          description: Mã chuyến xe liên quan đến sự cố
+          example: TR001
+
+        # Mã tài xế
+        driverId:
+          type: string
+          description: Mã tài xế liên quan đến sự cố
+          example: D001
+
+        # Loại sự cố
+        type:
+          type: string
+          description: Loại sự cố
+          example: VEHICLE_PROBLEM
+
+        # Mô tả
+        description:
+          type: string
+          description: Nội dung mô tả sự cố
+          example: "Vehicle has a technical problem"
+
+        # Trạng thái xử lý
+        status:
+          type: string
+          description: Trạng thái xử lý sự cố
+          enum:
+            - OPEN
+            - PROCESSING
+            - RESOLVED
+
+          example: OPEN
