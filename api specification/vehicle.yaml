@@ -1,0 +1,543 @@
+# =========================================================
+# VEHICLE API
+# Quản lý thông tin phương tiện
+# =========================================================
+
+openapi: 3.0.3
+
+# =========================================================
+# THÔNG TIN API
+# =========================================================
+
+info:
+  title: Vehicle API
+  description: API quản lý thông tin phương tiện trong hệ thống CAB
+  version: 1.0.0
+
+# Địa chỉ server của hệ thống
+servers:
+  - url: http://localhost:3000/api
+
+
+# =========================================================
+# DANH SÁCH API
+# =========================================================
+
+paths:
+
+  # =======================================================
+  # THÊM PHƯƠNG TIỆN
+  #
+  # Cho phép tạo thông tin phương tiện mới
+  # và gắn phương tiện với tài xế.
+  # =======================================================
+
+  /vehicles:
+    post:
+
+      tags:
+        - Vehicle
+
+      summary: Create vehicle
+
+      description: |
+        Tạo thông tin phương tiện mới trong hệ thống.
+
+        Thông tin phương tiện có thể bao gồm:
+        - Biển số xe
+        - Loại xe
+        - Hãng xe
+        - Mẫu xe
+        - Tài xế được gắn với phương tiện
+
+      operationId: createVehicle
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVehicleRequest'
+
+            example:
+              driverId: D001
+              licensePlate: "51A-12345"
+              vehicleType: CAR
+              brand: Toyota
+              model: Vios
+
+      responses:
+
+        # Tạo phương tiện thành công
+        '201':
+          description: Đã tạo thông tin phương tiện thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+
+        # Dữ liệu không hợp lệ
+        '400':
+          description: Thông tin phương tiện không hợp lệ
+
+        # Phương tiện đã tồn tại
+        '409':
+          description: Phương tiện đã tồn tại
+
+
+    # =====================================================
+    # LẤY DANH SÁCH PHƯƠNG TIỆN
+    #
+    # Cho phép quản lý xem các phương tiện
+    # đang được quản lý trong hệ thống.
+    # =====================================================
+
+    get:
+
+      tags:
+        - Vehicle
+
+      summary: Get vehicles
+
+      description: |
+        Lấy danh sách các phương tiện
+        đang được quản lý trong hệ thống.
+
+      operationId: getVehicles
+
+      responses:
+
+        # Lấy danh sách thành công
+        '200':
+          description: Lấy danh sách phương tiện thành công
+
+          content:
+            application/json:
+              schema:
+                type: array
+
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+
+
+  # =======================================================
+  # XEM THÔNG TIN MỘT PHƯƠNG TIỆN
+  # =======================================================
+
+  /vehicles/{vehicleId}:
+    get:
+
+      tags:
+        - Vehicle
+
+      summary: Get vehicle
+
+      description: |
+        Lấy thông tin chi tiết của một phương tiện
+        dựa trên mã phương tiện.
+
+      operationId: getVehicle
+
+      parameters:
+
+        # Mã phương tiện
+        - name: vehicleId
+          in: path
+          required: true
+          description: Mã định danh của phương tiện
+          schema:
+            type: string
+          example: V001
+
+      responses:
+
+        # Tìm thấy phương tiện
+        '200':
+          description: Lấy thông tin phương tiện thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+
+        # Không tìm thấy phương tiện
+        '404':
+          description: Không tìm thấy phương tiện
+
+
+    # =====================================================
+    # CẬP NHẬT THÔNG TIN PHƯƠNG TIỆN
+    # =====================================================
+
+    put:
+
+      tags:
+        - Vehicle
+
+      summary: Update vehicle
+
+      description: |
+        Cập nhật thông tin của phương tiện
+        đã tồn tại trong hệ thống.
+
+      operationId: updateVehicle
+
+      parameters:
+
+        # Mã phương tiện
+        - name: vehicleId
+          in: path
+          required: true
+          description: Mã định danh của phương tiện
+          schema:
+            type: string
+          example: V001
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVehicleRequest'
+
+            example:
+              licensePlate: "51A-67890"
+              vehicleType: CAR
+              brand: Toyota
+              model: Vios
+
+      responses:
+
+        # Cập nhật thành công
+        '200':
+          description: Cập nhật thông tin phương tiện thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+
+        # Dữ liệu không hợp lệ
+        '400':
+          description: Thông tin phương tiện không hợp lệ
+
+        # Không tìm thấy phương tiện
+        '404':
+          description: Không tìm thấy phương tiện
+
+
+    # =====================================================
+    # XÓA PHƯƠNG TIỆN
+    # =====================================================
+
+    delete:
+
+      tags:
+        - Vehicle
+
+      summary: Delete vehicle
+
+      description: |
+        Xóa thông tin phương tiện khỏi hệ thống.
+
+        Chức năng này chỉ nên được thực hiện
+        bởi người dùng có quyền quản lý phương tiện.
+
+      operationId: deleteVehicle
+
+      parameters:
+
+        # Mã phương tiện
+        - name: vehicleId
+          in: path
+          required: true
+          description: Mã định danh của phương tiện
+          schema:
+            type: string
+          example: V001
+
+      responses:
+
+        # Xóa thành công
+        '204':
+          description: Đã xóa phương tiện thành công
+
+        # Không tìm thấy phương tiện
+        '404':
+          description: Không tìm thấy phương tiện
+
+
+  # =======================================================
+  # XEM PHƯƠNG TIỆN CỦA MỘT TÀI XẾ
+  #
+  # Dùng để kiểm tra phương tiện đang được
+  # gắn với tài xế nào.
+  # =======================================================
+
+  /drivers/{driverId}/vehicles:
+    get:
+
+      tags:
+        - Vehicle
+
+      summary: Get driver vehicles
+
+      description: |
+        Lấy danh sách phương tiện được gắn
+        với một tài xế.
+
+      operationId: getDriverVehicles
+
+      parameters:
+
+        # Mã tài xế
+        - name: driverId
+          in: path
+          required: true
+          description: Mã định danh của tài xế
+          schema:
+            type: string
+          example: D001
+
+      responses:
+
+        # Lấy danh sách thành công
+        '200':
+          description: Lấy danh sách phương tiện của tài xế thành công
+
+          content:
+            application/json:
+              schema:
+                type: array
+
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+
+        # Không tìm thấy tài xế
+        '404':
+          description: Không tìm thấy tài xế
+
+
+  # =======================================================
+  # GẮN PHƯƠNG TIỆN VỚI TÀI XẾ
+  # =======================================================
+
+  /drivers/{driverId}/vehicles/{vehicleId}:
+    post:
+
+      tags:
+        - Vehicle
+
+      summary: Assign vehicle to driver
+
+      description: |
+        Gắn một phương tiện với một tài xế
+        trong hệ thống.
+
+      operationId: assignVehicleToDriver
+
+      parameters:
+
+        # Mã tài xế
+        - name: driverId
+          in: path
+          required: true
+          description: Mã định danh của tài xế
+          schema:
+            type: string
+          example: D001
+
+        # Mã phương tiện
+        - name: vehicleId
+          in: path
+          required: true
+          description: Mã định danh của phương tiện
+          schema:
+            type: string
+          example: V001
+
+      responses:
+
+        # Gắn thành công
+        '200':
+          description: Đã gắn phương tiện với tài xế thành công
+
+        # Không tìm thấy dữ liệu
+        '404':
+          description: Không tìm thấy tài xế hoặc phương tiện
+
+        # Phương tiện đã được gắn với tài xế khác
+        '409':
+          description: Phương tiện đã được gắn với tài xế khác
+
+
+# =========================================================
+# COMPONENTS
+#
+# Định nghĩa các loại dữ liệu được sử dụng
+# trong Vehicle API.
+# =========================================================
+
+components:
+
+  schemas:
+
+    # =====================================================
+    # THÔNG TIN PHƯƠNG TIỆN
+    # =====================================================
+
+    Vehicle:
+      type: object
+
+      properties:
+
+        # Mã phương tiện
+        vehicleId:
+          type: string
+          description: Mã định danh của phương tiện
+          example: V001
+
+        # Mã tài xế
+        driverId:
+          type: string
+          description: Mã tài xế đang được gắn với phương tiện
+          example: D001
+
+        # Biển số xe
+        licensePlate:
+          type: string
+          description: Biển số của phương tiện
+          example: "51A-12345"
+
+        # Loại phương tiện
+        vehicleType:
+          type: string
+          description: Loại phương tiện
+          enum:
+            - CAR
+            - MOTORBIKE
+
+          example: CAR
+
+        # Hãng xe
+        brand:
+          type: string
+          description: Hãng sản xuất phương tiện
+          example: Toyota
+
+        # Mẫu xe
+        model:
+          type: string
+          description: Mẫu xe
+          example: Vios
+
+        # Trạng thái phương tiện
+        status:
+          type: string
+          description: Trạng thái hoạt động của phương tiện
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - MAINTENANCE
+
+          example: ACTIVE
+
+
+    # =====================================================
+    # DỮ LIỆU TẠO PHƯƠNG TIỆN
+    # =====================================================
+
+    CreateVehicleRequest:
+      type: object
+
+      required:
+        - licensePlate
+        - vehicleType
+
+      properties:
+
+        # Mã tài xế
+        driverId:
+          type: string
+          description: Mã tài xế được gắn với phương tiện
+          example: D001
+
+        # Biển số
+        licensePlate:
+          type: string
+          description: Biển số phương tiện
+          example: "51A-12345"
+
+        # Loại xe
+        vehicleType:
+          type: string
+          description: Loại phương tiện
+          enum:
+            - CAR
+            - MOTORBIKE
+
+          example: CAR
+
+        # Hãng xe
+        brand:
+          type: string
+          description: Hãng sản xuất phương tiện
+          example: Toyota
+
+        # Mẫu xe
+        model:
+          type: string
+          description: Mẫu xe
+          example: Vios
+
+
+    # =====================================================
+    # DỮ LIỆU CẬP NHẬT PHƯƠNG TIỆN
+    # =====================================================
+
+    UpdateVehicleRequest:
+      type: object
+
+      properties:
+
+        # Biển số mới
+        licensePlate:
+          type: string
+          description: Biển số mới của phương tiện
+          example: "51A-67890"
+
+        # Loại xe
+        vehicleType:
+          type: string
+          description: Loại phương tiện
+          enum:
+            - CAR
+            - MOTORBIKE
+
+          example: CAR
+
+        # Hãng xe
+        brand:
+          type: string
+          description: Hãng sản xuất phương tiện
+          example: Toyota
+
+        # Mẫu xe
+        model:
+          type: string
+          description: Mẫu xe
+          example: Vios
+
+        # Trạng thái phương tiện
+        status:
+          type: string
+          description: Trạng thái của phương tiện
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - MAINTENANCE
+
+          example: ACTIVE
