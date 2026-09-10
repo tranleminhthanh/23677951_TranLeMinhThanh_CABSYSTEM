@@ -3046,43 +3046,43 @@ TRONG BẢNG NÀY CÓ CỘT : BUSINESS GOAL , MÃ BR , BUSINESS REQUIRMENT (BR01
 CHO BIẾT BR NÀO ĐƯỢC PHÂN RẢ THÀNH FR , (CÁC FR NÀY ĐƯỢC ỨNG AC NÀO , XÂY DỰNG BỘ TEST GIỮA PHÂN TÍCH YÊU CẦU )
 CHO BẢNG CUỐI CÙNG 
 
-12. THIẾT KẾ ACCEPTANCE CRITERIA
+BƯỚC 12. THIẾT KẾ ACCEPTANCE CRITERIA
 12.1. Mục đích
 
-Acceptance Criteria (AC) là tập hợp các tiêu chí chấp nhận được sử dụng để xác định một yêu cầu đã được thực hiện đầy đủ và có thể nghiệm thu.
+Acceptance Criteria (AC) là tập hợp các điều kiện mà yêu cầu phải đáp ứng để được xem là hoàn thành và đủ điều kiện nghiệm thu.
 
-Acceptance Criteria giúp xác định rõ điều kiện để Business Requirement được xem là hoàn thành, từ đó làm cơ sở cho việc kiểm thử và nghiệm thu hệ thống.
+AC được xây dựng dựa trên Functional Requirement (FR), đồng thời là cơ sở để xây dựng Test Case.
 
-Mỗi Acceptance Criteria được định danh theo mã:
+Mỗi tiêu chí được định danh theo mã:
 
 AC01, AC02, AC03, ...
 
 12.2. Nguyên tắc xây dựng
+| Nguyên tắc          | Mô tả                                                 |
+| ------------------- | ----------------------------------------------------- |
+| Rõ ràng             | Nội dung dễ hiểu, không gây nhiều cách hiểu           |
+| Có thể kiểm thử     | Có thể xác định kết quả Pass/Fail                     |
+| Có liên kết         | Mỗi AC phải truy xuất được về FR tương ứng            |
+| Có kết quả mong đợi | Xác định rõ hệ thống phải đáp ứng như thế nào         |
+| Có thể nghiệm thu   | Có thể dùng làm căn cứ xác nhận yêu cầu đã hoàn thành |
 
-Acceptance Criteria được xây dựng dựa trên các Functional Requirement và phải đáp ứng các yêu cầu sau:
-
-Nguyên tắc	Mô tả
-Rõ ràng	Nội dung tiêu chí phải dễ hiểu và không gây nhiều cách hiểu
-Có thể kiểm thử	Có thể xác định kết quả đạt hoặc không đạt
-Có liên kết	Mỗi AC phải truy xuất được về FR tương ứng
-Có kết quả mong đợi	Xác định rõ hệ thống phải phản hồi như thế nào
-Có khả năng nghiệm thu	Có thể sử dụng làm căn cứ xác định yêu cầu đã hoàn thành
 12.3. Danh sách Acceptance Criteria
-AC ID	BR	FR	Acceptance Criteria	Kết quả mong đợi
-AC01	BR01	FR01	Khách hàng nhập điểm đón hợp lệ	Hệ thống chấp nhận và ghi nhận điểm đón
-AC02	BR01	FR02	Khách hàng nhập điểm đến hợp lệ	Hệ thống chấp nhận và ghi nhận điểm đến
-AC03	BR01	FR03	Khách hàng lựa chọn loại xe	Hệ thống ghi nhận loại xe được lựa chọn
-AC04	BR01	FR04	Khách hàng xác nhận thông tin chuyến	Hệ thống cho phép tiếp tục gửi yêu cầu
-AC05	BR01	FR05	Khách hàng gửi yêu cầu đặt chuyến	Hệ thống tạo yêu cầu đặt chuyến
-AC06	BR02	FR08	Hệ thống kiểm tra tài xế phù hợp	Hệ thống xác định được tài xế đáp ứng điều kiện
-AC07	BR02	FR09	Hệ thống xác định vị trí tài xế	Hệ thống có thông tin vị trí phục vụ phân công
-AC08	BR02	FR13	Tài xế từ chối chuyến	Hệ thống xử lý yêu cầu và tiếp tục tìm tài xế khác
-AC09	BR02	FR14	Tài xế không phản hồi	Hệ thống xử lý theo quy tắc đã xác định
-AC10	BR02	FR15	Vẫn còn tài xế phù hợp	Hệ thống tiếp tục tìm tài xế khác
-AC11	BR02	FR15	Không còn tài xế phù hợp	Hệ thống thông báo không tìm được tài xế
+| AC ID | BR ID | FR ID | Acceptance Criteria                | Kết quả mong đợi                        |
+| ----- | ----- | ----- | ---------------------------------- | --------------------------------------- |
+| AC01  | BR01  | FR01  | Customer nhập điểm đón hợp lệ      | Hệ thống ghi nhận điểm đón              |
+| AC02  | BR01  | FR02  | Customer nhập điểm đến hợp lệ      | Hệ thống ghi nhận điểm đến              |
+| AC03  | BR01  | FR03  | Customer lựa chọn loại xe          | Hệ thống ghi nhận loại xe               |
+| AC04  | BR01  | FR04  | Customer xác nhận thông tin chuyến | Hệ thống cho phép tiếp tục đặt chuyến   |
+| AC05  | BR01  | FR05  | Customer gửi yêu cầu đặt chuyến    | Hệ thống tạo yêu cầu đặt chuyến         |
+| AC06  | BR02  | FR08  | Hệ thống kiểm tra tài xế phù hợp   | Xác định được tài xế đáp ứng điều kiện  |
+| AC07  | BR02  | FR09  | Hệ thống xác định vị trí tài xế    | Có thông tin vị trí phục vụ phân công   |
+| AC08  | BR02  | FR13  | Driver từ chối chuyến              | Hệ thống tiếp tục xử lý tìm tài xế khác |
+| AC09  | BR02  | FR14  | Driver không phản hồi              | Hệ thống xử lý theo quy tắc đã xác định |
+| AC10  | BR02  | FR15  | Vẫn còn tài xế phù hợp             | Hệ thống tiếp tục tìm tài xế khác       |
+| AC11  | BR02  | FR15  | Không còn tài xế phù hợp           | Hệ thống thông báo cho Customer         |
 
-Kết quả: Acceptance Criteria là cơ sở để xác định yêu cầu đã đáp ứng đầy đủ điều kiện nghiệm thu và được sử dụng làm đầu vào cho bước xây dựng Test Case.
 
+Acceptance Criteria xác định điều kiện để yêu cầu được xem là đã đáp ứng, hoàn thành và có thể nghiệm thu, đồng thời tạo cơ sở cho việc xây dựng Test Case.
 13. TRUY XUẤT NGUỒN GỐC YÊU CẦU
 13.1. Mục đích
 
@@ -3101,37 +3101,44 @@ Nhóm sử dụng Requirement Traceability Matrix (RTM) để quản lý mối l
 
 RTM gồm các cột chính:
 
-Cột	Nội dung
-Business Goal	Mục tiêu kinh doanh
-BR ID	Mã Business Requirement
-Business Requirement	Nội dung yêu cầu nghiệp vụ
-FR ID	Mã Functional Requirement
-Functional Requirement	Nội dung yêu cầu chức năng
-Use Case	Use Case thực hiện chức năng
-AC ID	Mã Acceptance Criteria
-Test Case	Test Case dùng để kiểm thử
+| Cột                    | Ý nghĩa                            |
+| ---------------------- | ---------------------------------- |
+| Business Goal          | Mục tiêu kinh doanh                |
+| BR ID                  | Mã Business Requirement            |
+| Business Requirement   | Nội dung yêu cầu nghiệp vụ         |
+| FR ID                  | Mã Functional Requirement          |
+| Functional Requirement | Nội dung yêu cầu chức năng         |
+| Use Case               | Use Case thực hiện chức năng       |
+| AC ID                  | Acceptance Criteria áp dụng cho FR |
+| Test Case              | Test Case dùng để kiểm thử         |
+
 13.3. Ma trận truy xuất yêu cầu
-Business Goal	BR ID	Business Requirement	FR ID	Functional Requirement	Use Case	AC ID	Test Case
-BG01	BR01	Đặt chuyến xe	FR01	Nhập điểm đón	UC01 – Book Trip	AC01	TC01
-BG01	BR01	Đặt chuyến xe	FR02	Nhập điểm đến	UC01 – Book Trip	AC02	TC02
-BG01	BR01	Đặt chuyến xe	FR03	Chọn loại xe	UC01 – Book Trip	AC03	TC03
-BG01	BR01	Đặt chuyến xe	FR04	Xác nhận thông tin chuyến	UC01 – Book Trip	AC04	TC04
-BG01	BR01	Đặt chuyến xe	FR05	Gửi yêu cầu đặt chuyến	UC01 – Book Trip	AC05	TC05
-BG02	BR02	Tìm và phân công tài xế	FR08	Kiểm tra tài xế phù hợp	UC02 – Assign Driver	AC06	TC06
-BG02	BR02	Tìm và phân công tài xế	FR09	Xác định vị trí tài xế	UC02 – Assign Driver	AC07	TC07
-BG02	BR02	Tìm và phân công tài xế	FR13	Xử lý trường hợp tài xế từ chối	UC02 – Assign Driver	AC08	TC08
-BG02	BR02	Tìm và phân công tài xế	FR14	Xử lý trường hợp tài xế không phản hồi	UC02 – Assign Driver	AC09	TC09
-BG02	BR02	Tìm và phân công tài xế	FR15	Tìm tài xế khác	UC02 – Assign Driver	AC10	TC10
+| Business Goal        | BR ID | Business Requirement    | FR ID | Functional Requirement      | Use Case             | AC ID | Test Case |
+| -------------------- | ----- | ----------------------- | ----- | --------------------------- | -------------------- | ----- | --------- |
+| BG01 – Hỗ trợ đặt xe | BR01  | Đặt chuyến xe           | FR01  | Nhập điểm đón               | UC01 – Book Trip     | AC01  | TC01      |
+| BG01 – Hỗ trợ đặt xe | BR01  | Đặt chuyến xe           | FR02  | Nhập điểm đến               | UC01 – Book Trip     | AC02  | TC02      |
+| BG01 – Hỗ trợ đặt xe | BR01  | Đặt chuyến xe           | FR03  | Chọn loại xe                | UC01 – Book Trip     | AC03  | TC03      |
+| BG01 – Hỗ trợ đặt xe | BR01  | Đặt chuyến xe           | FR04  | Xác nhận thông tin chuyến   | UC01 – Book Trip     | AC04  | TC04      |
+| BG01 – Hỗ trợ đặt xe | BR01  | Đặt chuyến xe           | FR05  | Gửi yêu cầu đặt chuyến      | UC01 – Book Trip     | AC05  | TC05      |
+| BG02 – Tìm tài xế    | BR02  | Tìm và phân công tài xế | FR08  | Kiểm tra tài xế phù hợp     | UC02 – Assign Driver | AC06  | TC06      |
+| BG02 – Tìm tài xế    | BR02  | Tìm và phân công tài xế | FR09  | Xác định vị trí tài xế      | UC02 – Assign Driver | AC07  | TC07      |
+| BG02 – Tìm tài xế    | BR02  | Tìm và phân công tài xế | FR13  | Xử lý tài xế từ chối        | UC02 – Assign Driver | AC08  | TC08      |
+| BG02 – Tìm tài xế    | BR02  | Tìm và phân công tài xế | FR14  | Xử lý tài xế không phản hồi | UC02 – Assign Driver | AC09  | TC09      |
+| BG02 – Tìm tài xế    | BR02  | Tìm và phân công tài xế | FR15  | Tìm tài xế khác             | UC02 – Assign Driver | AC10  | TC10      |
+| BG02 – Tìm tài xế    | BR02  | Tìm và phân công tài xế | FR15  | Không còn tài xế phù hợp    | UC02 – Assign Driver | AC11  | TC11      |
+
 13.4. Ý nghĩa của ma trận
 
 RTM giúp kiểm tra tính đầy đủ của quá trình phân tích và kiểm thử yêu cầu.
 
-Mối liên kết	Ý nghĩa
-Business Goal → BR	Xác định yêu cầu nghiệp vụ phục vụ mục tiêu nào
-BR → FR	Xác định BR được phân rã thành những chức năng nào
-FR → Use Case	Xác định chức năng được thực hiện trong Use Case nào
-FR → AC	Xác định điều kiện để nghiệm thu chức năng
-AC → Test Case	Xác định cách kiểm thử điều kiện nghiệm thu
+| Quan hệ | Cần đảm bảo                                         |
+| ------- | --------------------------------------------------- |
+| BG → BR | Mỗi BR phải phục vụ ít nhất một mục tiêu kinh doanh |
+| BR → FR | Mỗi BR phải được phân rã thành FR phù hợp           |
+| FR → UC | Mỗi FR phải được thực hiện bởi một hoặc nhiều UC    |
+| FR → AC | Mỗi FR quan trọng phải có AC tương ứng              |
+| AC → TC | Mỗi AC phải có Test Case để kiểm thử                |
+
 
 Thông qua RTM, nhóm có thể xác định một yêu cầu từ Business Goal ban đầu đến Test Case, đồng thời phát hiện trường hợp yêu cầu chưa được đặc tả, chưa có tiêu chí nghiệm thu hoặc chưa có kiểm thử.
 
@@ -3143,63 +3150,51 @@ Test Case được xây dựng dựa trên Acceptance Criteria nhằm kiểm tra
 Mỗi Test Case được liên kết với một AC trong RTM để đảm bảo các tiêu chí nghiệm thu đều được kiểm thử.
 
 14.2. Cấu trúc Test Case
-Thành phần	Nội dung
-Test Case ID	Mã Test Case
-AC ID	Acceptance Criteria được kiểm thử
-Test Scenario	Nội dung cần kiểm tra
-Precondition	Điều kiện trước khi kiểm thử
-Test Data	Dữ liệu đầu vào
-Test Steps	Các bước thực hiện
-Expected Result	Kết quả mong đợi
-Actual Result	Kết quả thực tế
-Status	Pass / Fail
+
+| Thành phần      | Nội dung                          |
+| --------------- | --------------------------------- |
+| Test Case ID    | Mã Test Case                      |
+| AC ID           | Acceptance Criteria được kiểm thử |
+| Test Scenario   | Nội dung cần kiểm tra             |
+| Precondition    | Điều kiện trước khi kiểm thử      |
+| Test Data       | Dữ liệu đầu vào                   |
+| Test Steps      | Các bước thực hiện                |
+| Expected Result | Kết quả mong đợi                  |
+| Actual Result   | Kết quả thực tế                   |
+| Status          | Pass / Fail / Not Run             |
+
 14.3. Ví dụ Test Case
-TC ID	AC ID	Test Scenario	Expected Result	Status
-TC01	AC01	Nhập điểm đón hợp lệ	Hệ thống ghi nhận điểm đón	Not Run
-TC02	AC02	Nhập điểm đến hợp lệ	Hệ thống ghi nhận điểm đến	Not Run
-TC03	AC03	Chọn loại xe	Hệ thống ghi nhận loại xe	Not Run
-TC04	AC04	Xác nhận thông tin chuyến	Hệ thống cho phép tiếp tục	Not Run
-TC05	AC05	Gửi yêu cầu đặt chuyến	Yêu cầu chuyến được tạo	Not Run
-TC06	AC06	Kiểm tra tài xế phù hợp	Hệ thống xác định tài xế phù hợp	Not Run
-TC07	AC08	Tài xế từ chối chuyến	Hệ thống tìm tài xế khác	Not Run
+| TC ID | AC ID | Test Scenario             | Expected Result                  | Status  |
+| ----- | ----- | ------------------------- | -------------------------------- | ------- |
+| TC01  | AC01  | Nhập điểm đón hợp lệ      | Hệ thống ghi nhận điểm đón       | Not Run |
+| TC02  | AC02  | Nhập điểm đến hợp lệ      | Hệ thống ghi nhận điểm đến       | Not Run |
+| TC03  | AC03  | Chọn loại xe              | Hệ thống ghi nhận loại xe        | Not Run |
+| TC04  | AC04  | Xác nhận thông tin chuyến | Hệ thống cho phép tiếp tục       | Not Run |
+| TC05  | AC05  | Gửi yêu cầu đặt chuyến    | Yêu cầu chuyến được tạo          | Not Run |
+| TC06  | AC06  | Kiểm tra tài xế phù hợp   | Hệ thống xác định tài xế phù hợp | Not Run |
+| TC07  | AC07  | Xác định vị trí tài xế    | Hệ thống ghi nhận vị trí         | Not Run |
+| TC08  | AC08  | Tài xế từ chối chuyến     | Hệ thống tìm tài xế khác         | Not Run |
+| TC09  | AC09  | Tài xế không phản hồi     | Hệ thống xử lý theo quy tắc      | Not Run |
+| TC10  | AC10  | Còn tài xế phù hợp        | Hệ thống tiếp tục tìm tài xế     | Not Run |
+| TC11  | AC11  | Không còn tài xế phù hợp  | Hệ thống thông báo cho Customer  | Not Run |
+
 15. KẾT QUẢ VÀ TÍNH TRUY XUẤT CỦA YÊU CẦU
 
 Sau khi hoàn thành các bước, hệ thống yêu cầu có thể được quản lý và kiểm thử theo cấu trúc:
 
-Thành phần	Kết quả
-Business Goal	Xác định mục tiêu kinh doanh
-Business Requirement	Xác định yêu cầu nghiệp vụ
-Functional Requirement	Phân rã yêu cầu thành chức năng
-Use Case	Mô tả tương tác với hệ thống
-Acceptance Criteria	Xác định điều kiện nghiệm thu
-RTM	Theo dõi mối liên hệ giữa các yêu cầu
-Test Case	Kiểm tra các tiêu chí nghiệm thu
-Chuỗi truy xuất yêu cầu
+| Thành phần        | Kết quả                                       |
+| ----------------- | --------------------------------------------- |
+| **Business Goal** | Xác định mục tiêu kinh doanh                  |
+| **BR**            | Xác định doanh nghiệp cần gì                  |
+| **FR**            | Phân rã BR thành chức năng hệ thống           |
+| **Use Case**      | Xác định cách Actor tương tác với hệ thống    |
+| **AC**            | Xác định điều kiện để yêu cầu được nghiệm thu |
+| **RTM**           | Liên kết và truy xuất toàn bộ yêu cầu         |
+| **Test Case**     | Kiểm tra yêu cầu có được đáp ứng hay không    |
+
 
 Business Goal → Business Requirement → Functional Requirement → Use Case → Acceptance Criteria → Test Case
 
-Đây là phần quan trọng nhất của Bước 12–14 vì nó chứng minh rằng yêu cầu không chỉ được phân tích mà còn được đặc tả, xác định điều kiện nghiệm thu, truy xuất và kiểm thử.
-
-Một điểm mình khuyên bạn sửa so với bản trước
-
-Bạn nói “Bước 12: cho biết Business Requirement được kết thúc” thì trong báo cáo nên viết chuyên nghiệp hơn là:
-
-“Acceptance Criteria xác định các điều kiện mà Business Requirement/Functional Requirement phải đáp ứng để được xem là hoàn thành và đủ điều kiện nghiệm thu.”
-
-Không nên viết:
-
-“Nếu không đặt ra thì làm hoài không kết thúc dự án.”
-
-Ý đó đúng về mặt giải thích, nhưng không nên dùng trong báo cáo chính thức vì hơi khẩu ngữ.
 
 
 
-
-
-
-
-**Điểm quan trọng nhất:** đừng làm Bước 12, 13, 14 thành ba phần tách rời. Hãy thể hiện chúng như một chuỗi:
-
-> **FR → AC → RTM → Test Case → YAML → GitHub**
-
-Như vậy tài liệu của bạn sẽ thể hiện được **traceability từ yêu cầu nghiệp vụ đến kiểm thử**, đúng với mục tiêu mà phần cuối file đang hướng tới. 
