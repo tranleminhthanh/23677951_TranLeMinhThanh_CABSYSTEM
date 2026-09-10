@@ -1,0 +1,575 @@
+# =========================================================
+# REPORT API
+# Quản lý báo cáo và thống kê hoạt động của hệ thống CAB
+# =========================================================
+
+openapi: 3.0.3
+
+# =========================================================
+# THÔNG TIN API
+# =========================================================
+
+info:
+  title: Report API
+  description: API cung cấp các báo cáo và thống kê phục vụ quản lý vận hành hệ thống CAB
+  version: 1.0.0
+
+# Địa chỉ server của hệ thống
+servers:
+  - url: http://localhost:3000/api
+
+
+# =========================================================
+# DANH SÁCH API
+# =========================================================
+
+paths:
+
+  # =======================================================
+  # BÁO CÁO DOANH THU
+  #
+  # Cung cấp thông tin doanh thu theo khoảng thời gian.
+  # =======================================================
+
+  /reports/revenue:
+    get:
+
+      tags:
+        - Report
+
+      summary: Get revenue report
+
+      description: |
+        Lấy báo cáo doanh thu của hệ thống
+        trong một khoảng thời gian được lựa chọn.
+
+        Có thể sử dụng báo cáo để theo dõi:
+        - Tổng doanh thu
+        - Số lượng chuyến xe
+        - Doanh thu theo khoảng thời gian
+
+      operationId: getRevenueReport
+
+      # ---------------------------------------------------
+      # THAM SỐ TÌM KIẾM
+      # ---------------------------------------------------
+
+      parameters:
+
+        # Ngày bắt đầu
+        - name: startDate
+          in: query
+          required: true
+          description: Ngày bắt đầu của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-01"
+
+        # Ngày kết thúc
+        - name: endDate
+          in: query
+          required: true
+          description: Ngày kết thúc của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-10"
+
+      responses:
+
+        # Lấy báo cáo thành công
+        '200':
+          description: Lấy báo cáo doanh thu thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevenueReport'
+
+        # Tham số không hợp lệ
+        '400':
+          description: Khoảng thời gian báo cáo không hợp lệ
+
+
+  # =======================================================
+  # BÁO CÁO CHUYẾN XE
+  #
+  # Thống kê số lượng và trạng thái chuyến xe.
+  # =======================================================
+
+  /reports/trips:
+    get:
+
+      tags:
+        - Report
+
+      summary: Get trip report
+
+      description: |
+        Lấy báo cáo thống kê các chuyến xe
+        trong một khoảng thời gian.
+
+        Báo cáo có thể thể hiện:
+        - Tổng số chuyến
+        - Số chuyến hoàn thành
+        - Số chuyến bị hủy
+        - Số chuyến đang thực hiện
+
+      operationId: getTripReport
+
+      parameters:
+
+        # Ngày bắt đầu
+        - name: startDate
+          in: query
+          required: true
+          description: Ngày bắt đầu của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-01"
+
+        # Ngày kết thúc
+        - name: endDate
+          in: query
+          required: true
+          description: Ngày kết thúc của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-10"
+
+      responses:
+
+        # Lấy báo cáo thành công
+        '200':
+          description: Lấy báo cáo chuyến xe thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripReport'
+
+        # Tham số không hợp lệ
+        '400':
+          description: Khoảng thời gian báo cáo không hợp lệ
+
+
+  # =======================================================
+  # BÁO CÁO TÀI XẾ
+  #
+  # Cung cấp thống kê hoạt động của tài xế.
+  # =======================================================
+
+  /reports/drivers:
+    get:
+
+      tags:
+        - Report
+
+      summary: Get driver report
+
+      description: |
+        Lấy báo cáo thống kê hoạt động của tài xế
+        trong một khoảng thời gian.
+
+        Báo cáo có thể bao gồm:
+        - Số chuyến đã nhận
+        - Số chuyến hoàn thành
+        - Số chuyến bị hủy
+        - Điểm đánh giá trung bình
+
+      operationId: getDriverReport
+
+      parameters:
+
+        # Ngày bắt đầu
+        - name: startDate
+          in: query
+          required: true
+          description: Ngày bắt đầu của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-01"
+
+        # Ngày kết thúc
+        - name: endDate
+          in: query
+          required: true
+          description: Ngày kết thúc của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-10"
+
+      responses:
+
+        # Lấy báo cáo thành công
+        '200':
+          description: Lấy báo cáo tài xế thành công
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DriverReport'
+
+        # Tham số không hợp lệ
+        '400':
+          description: Khoảng thời gian báo cáo không hợp lệ
+
+
+  # =======================================================
+  # BÁO CÁO THANH TOÁN
+  #
+  # Thống kê tình trạng thanh toán của các chuyến xe.
+  # =======================================================
+
+  /reports/payments:
+    get:
+
+      tags:
+        - Report
+
+      summary: Get payment report
+
+      description: |
+        Lấy báo cáo thống kê các giao dịch thanh toán
+        trong một khoảng thời gian.
+
+        Báo cáo có thể bao gồm:
+        - Tổng số giao dịch
+        - Tổng số tiền
+        - Giao dịch thành công
+        - Giao dịch thất bại
+
+      operationId: getPaymentReport
+
+      parameters:
+
+        # Ngày bắt đầu
+        - name: startDate
+          in: query
+          required: true
+          description: Ngày bắt đầu của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-01"
+
+        # Ngày kết thúc
+        - name: endDate
+          in: query
+          required: true
+          description: Ngày kết thúc của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-10"
+
+      responses:
+
+        # Lấy báo cáo thành công
+        '200':
+          description: Lấy báo cáo thanh toán thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReport'
+
+        # Tham số không hợp lệ
+        '400':
+          description: Khoảng thời gian báo cáo không hợp lệ
+
+
+  # =======================================================
+  # BÁO CÁO ĐÁNH GIÁ
+  #
+  # Thống kê kết quả đánh giá tài xế.
+  # =======================================================
+
+  /reports/ratings:
+    get:
+
+      tags:
+        - Report
+
+      summary: Get rating report
+
+      description: |
+        Lấy báo cáo thống kê đánh giá của khách hàng
+        đối với tài xế.
+
+        Báo cáo có thể bao gồm:
+        - Tổng số lượt đánh giá
+        - Điểm đánh giá trung bình
+        - Số lượng đánh giá theo từng mức điểm
+
+      operationId: getRatingReport
+
+      parameters:
+
+        # Ngày bắt đầu
+        - name: startDate
+          in: query
+          required: true
+          description: Ngày bắt đầu của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-01"
+
+        # Ngày kết thúc
+        - name: endDate
+          in: query
+          required: true
+          description: Ngày kết thúc của khoảng thời gian báo cáo
+          schema:
+            type: string
+            format: date
+          example: "2026-09-10"
+
+      responses:
+
+        # Lấy báo cáo thành công
+        '200':
+          description: Lấy báo cáo đánh giá thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatingReport'
+
+        # Tham số không hợp lệ
+        '400':
+          description: Khoảng thời gian báo cáo không hợp lệ
+
+
+# =========================================================
+# COMPONENTS
+#
+# Định nghĩa các loại dữ liệu được sử dụng
+# trong Report API.
+# =========================================================
+
+components:
+
+  schemas:
+
+    # =====================================================
+    # BÁO CÁO DOANH THU
+    # =====================================================
+
+    RevenueReport:
+      type: object
+
+      properties:
+
+        # Khoảng thời gian báo cáo
+        startDate:
+          type: string
+          format: date
+          description: Ngày bắt đầu báo cáo
+          example: "2026-09-01"
+
+        endDate:
+          type: string
+          format: date
+          description: Ngày kết thúc báo cáo
+          example: "2026-09-10"
+
+        # Tổng doanh thu
+        totalRevenue:
+          type: number
+          format: double
+          description: Tổng doanh thu trong khoảng thời gian
+          example: 15000000
+
+        # Tổng số chuyến
+        totalTrips:
+          type: integer
+          description: Tổng số chuyến xe trong khoảng thời gian
+          example: 120
+
+        # Đơn vị tiền tệ
+        currency:
+          type: string
+          description: Đơn vị tiền tệ sử dụng trong báo cáo
+          example: VND
+
+
+    # =====================================================
+    # BÁO CÁO CHUYẾN XE
+    # =====================================================
+
+    TripReport:
+      type: object
+
+      properties:
+
+        # Tổng số chuyến
+        totalTrips:
+          type: integer
+          description: Tổng số chuyến xe
+          example: 120
+
+        # Chuyến hoàn thành
+        completedTrips:
+          type: integer
+          description: Số chuyến xe đã hoàn thành
+          example: 100
+
+        # Chuyến bị hủy
+        cancelledTrips:
+          type: integer
+          description: Số chuyến xe bị hủy
+          example: 10
+
+        # Chuyến đang thực hiện
+        inProgressTrips:
+          type: integer
+          description: Số chuyến xe đang thực hiện
+          example: 10
+
+
+    # =====================================================
+    # BÁO CÁO TÀI XẾ
+    # =====================================================
+
+    DriverReport:
+      type: object
+
+      properties:
+
+        # Mã tài xế
+        driverId:
+          type: string
+          description: Mã định danh của tài xế
+          example: D001
+
+        # Số chuyến đã nhận
+        acceptedTrips:
+          type: integer
+          description: Số chuyến tài xế đã nhận
+          example: 50
+
+        # Số chuyến hoàn thành
+        completedTrips:
+          type: integer
+          description: Số chuyến tài xế đã hoàn thành
+          example: 45
+
+        # Số chuyến hủy
+        cancelledTrips:
+          type: integer
+          description: Số chuyến bị hủy
+          example: 5
+
+        # Điểm đánh giá trung bình
+        averageRating:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 5
+          description: Điểm đánh giá trung bình của tài xế
+          example: 4.8
+
+
+    # =====================================================
+    # BÁO CÁO THANH TOÁN
+    # =====================================================
+
+    PaymentReport:
+      type: object
+
+      properties:
+
+        # Tổng số giao dịch
+        totalTransactions:
+          type: integer
+          description: Tổng số giao dịch thanh toán
+          example: 100
+
+        # Tổng số tiền
+        totalAmount:
+          type: number
+          format: double
+          description: Tổng số tiền giao dịch
+          example: 15000000
+
+        # Giao dịch thành công
+        successfulTransactions:
+          type: integer
+          description: Số giao dịch thanh toán thành công
+          example: 90
+
+        # Giao dịch thất bại
+        failedTransactions:
+          type: integer
+          description: Số giao dịch thanh toán thất bại
+          example: 10
+
+        # Đơn vị tiền tệ
+        currency:
+          type: string
+          description: Đơn vị tiền tệ sử dụng trong báo cáo
+          example: VND
+
+
+    # =====================================================
+    # BÁO CÁO ĐÁNH GIÁ
+    # =====================================================
+
+    RatingReport:
+      type: object
+
+      properties:
+
+        # Tổng số lượt đánh giá
+        totalRatings:
+          type: integer
+          description: Tổng số lượt đánh giá của khách hàng
+          example: 100
+
+        # Điểm trung bình
+        averageRating:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 5
+          description: Điểm đánh giá trung bình
+          example: 4.6
+
+        # Số đánh giá 5 sao
+        fiveStarRatings:
+          type: integer
+          description: Số lượt đánh giá 5 sao
+          example: 70
+
+        # Số đánh giá 4 sao
+        fourStarRatings:
+          type: integer
+          description: Số lượt đánh giá 4 sao
+          example: 20
+
+        # Số đánh giá 3 sao
+        threeStarRatings:
+          type: integer
+          description: Số lượt đánh giá 3 sao
+          example: 5
+
+        # Số đánh giá 2 sao
+        twoStarRatings:
+          type: integer
+          description: Số lượt đánh giá 2 sao
+          example: 3
+
+        # Số đánh giá 1 sao
+        oneStarRatings:
+          type: integer
+          description: Số lượt đánh giá 1 sao
+          example: 2
