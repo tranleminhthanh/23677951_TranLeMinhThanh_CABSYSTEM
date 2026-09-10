@@ -1,0 +1,369 @@
+# =========================================================
+# TRIP API
+# Quản lý quy trình đặt chuyến xe
+# Phục vụ FR01 - FR07
+# =========================================================
+
+openapi: 3.0.3
+
+# =========================================================
+# THÔNG TIN API
+# =========================================================
+
+info:
+  title: Trip API
+  description: API hỗ trợ khách hàng tạo và xác nhận yêu cầu đặt chuyến xe
+  version: 1.0.0
+
+# Địa chỉ server của hệ thống
+servers:
+  - url: http://localhost:3000/api
+
+
+# =========================================================
+# DANH SÁCH API
+# =========================================================
+
+paths:
+
+  # =======================================================
+  # FR01 - FR03
+  #
+  # FR01: Nhập điểm đón
+  # FR02: Nhập điểm đến
+  # FR03: Chọn loại xe
+  #
+  # Khách hàng nhập thông tin cần thiết để tạo chuyến.
+  # =======================================================
+
+  /trips:
+    post:
+
+      tags:
+        - Trip
+
+      # Tên API hiển thị trên Swagger
+      summary: Create trip
+
+      # Mô tả chức năng
+      description: |
+        Cho phép khách hàng tạo yêu cầu đặt chuyến xe
+        bằng cách cung cấp:
+        - Điểm đón
+        - Điểm đến
+        - Loại xe
+
+      operationId: createTrip
+
+      # ===================================================
+      # DỮ LIỆU KHÁCH HÀNG GỬI LÊN
+      # ===================================================
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTripRequest'
+
+            # Dữ liệu mẫu
+            example:
+              pickupLocation: "123 Nguyen Hue, District 1"
+              destination: "456 Dien Bien Phu, District 3"
+              vehicleType: "CAR"
+
+      # ===================================================
+      # KẾT QUẢ
+      # ===================================================
+
+      responses:
+
+        # Tạo yêu cầu đặt chuyến thành công
+        '201':
+          description: Đã tạo yêu cầu đặt chuyến thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+
+        # Thông tin khách hàng nhập không hợp lệ
+        '400':
+          description: Thông tin đặt chuyến không hợp lệ
+
+
+  # =======================================================
+  # FR04 - FR05
+  #
+  # FR04: Xác nhận thông tin đặt chuyến
+  # FR05: Kiểm tra thông tin trước khi gửi yêu cầu
+  #
+  # Khách hàng xác nhận lại thông tin chuyến
+  # trước khi gửi yêu cầu chính thức.
+  # =======================================================
+
+  /trips/{tripId}/confirm:
+    post:
+
+      tags:
+        - Trip
+
+      summary: Confirm trip
+
+      description: |
+        Cho phép khách hàng xác nhận thông tin
+        của chuyến xe trước khi gửi yêu cầu.
+
+        Hệ thống kiểm tra các thông tin:
+        - Điểm đón
+        - Điểm đến
+        - Loại xe
+
+      operationId: confirmTrip
+
+      # ===================================================
+      # THAM SỐ URL
+      # ===================================================
+
+      parameters:
+
+        # Mã chuyến xe
+        - name: tripId
+          in: path
+          required: true
+          description: Mã của chuyến xe cần xác nhận
+          schema:
+            type: string
+          example: TR001
+
+      # ===================================================
+      # KẾT QUẢ
+      # ===================================================
+
+      responses:
+
+        # Xác nhận thành công
+        '200':
+          description: Thông tin chuyến xe hợp lệ và đã được xác nhận
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+
+        # Thông tin chuyến không hợp lệ
+        '400':
+          description: Thông tin chuyến xe không hợp lệ
+
+        # Không tìm thấy chuyến
+        '404':
+          description: Không tìm thấy chuyến xe
+
+
+  # =======================================================
+  # FR06 - FR07
+  #
+  # FR06: Gửi yêu cầu đặt xe
+  # FR07: Thông báo yêu cầu đã được tiếp nhận
+  #
+  # Sau khi khách hàng xác nhận thông tin,
+  # hệ thống gửi yêu cầu đặt xe.
+  # =======================================================
+
+  /trips/{tripId}/request:
+    post:
+
+      tags:
+        - Trip
+
+      summary: Request trip
+
+      description: |
+        Gửi yêu cầu đặt chuyến xe sau khi
+        khách hàng đã xác nhận thông tin.
+
+        Sau khi tiếp nhận thành công,
+        hệ thống thông báo cho khách hàng
+        rằng yêu cầu đặt xe đã được tiếp nhận.
+
+      operationId: requestTrip
+
+      # ===================================================
+      # THAM SỐ URL
+      # ===================================================
+
+      parameters:
+
+        # Mã chuyến xe
+        - name: tripId
+          in: path
+          required: true
+          description: Mã của chuyến xe cần gửi yêu cầu
+          schema:
+            type: string
+          example: TR001
+
+      # ===================================================
+      # KẾT QUẢ
+      # ===================================================
+
+      responses:
+
+        # Yêu cầu được tiếp nhận
+        '202':
+          description: Yêu cầu đặt chuyến đã được tiếp nhận
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripRequestResponse'
+
+        # Chuyến xe chưa được xác nhận
+        '400':
+          description: Chuyến xe chưa được xác nhận thông tin
+
+        # Không tìm thấy chuyến
+        '404':
+          description: Không tìm thấy chuyến xe
+
+
+# =========================================================
+# COMPONENTS
+#
+# Định nghĩa các loại dữ liệu được sử dụng
+# trong Trip API.
+# =========================================================
+
+components:
+
+  schemas:
+
+    # =====================================================
+    # DỮ LIỆU TẠO CHUYẾN
+    #
+    # Dùng cho:
+    # FR01 - Nhập điểm đón
+    # FR02 - Nhập điểm đến
+    # FR03 - Chọn loại xe
+    # =====================================================
+
+    CreateTripRequest:
+      type: object
+
+      required:
+        - pickupLocation
+        - destination
+        - vehicleType
+
+      properties:
+
+        # Điểm đón khách
+        pickupLocation:
+          type: string
+          description: Địa điểm khách hàng muốn được đón
+          example: "123 Nguyen Hue, District 1"
+
+        # Điểm đến
+        destination:
+          type: string
+          description: Địa điểm khách hàng muốn đến
+          example: "456 Dien Bien Phu, District 3"
+
+        # Loại xe khách hàng lựa chọn
+        vehicleType:
+          type: string
+          description: Loại xe khách hàng muốn sử dụng
+          example: CAR
+
+
+    # =====================================================
+    # THÔNG TIN CHUYẾN XE
+    #
+    # Dùng để trả về thông tin chuyến xe.
+    # =====================================================
+
+    Trip:
+      type: object
+
+      properties:
+
+        # Mã chuyến xe
+        tripId:
+          type: string
+          description: Mã định danh của chuyến xe
+          example: TR001
+
+        # Mã khách hàng
+        customerId:
+          type: string
+          description: Mã khách hàng tạo chuyến
+          example: C001
+
+        # Điểm đón
+        pickupLocation:
+          type: string
+          description: Địa điểm đón khách
+          example: "123 Nguyen Hue, District 1"
+
+        # Điểm đến
+        destination:
+          type: string
+          description: Địa điểm trả khách
+          example: "456 Dien Bien Phu, District 3"
+
+        # Loại xe
+        vehicleType:
+          type: string
+          description: Loại xe được khách hàng lựa chọn
+          example: CAR
+
+        # Trạng thái chuyến
+        status:
+          type: string
+          description: Trạng thái hiện tại của chuyến xe
+          enum:
+            - DRAFT
+            - CONFIRMED
+            - REQUESTED
+            - DRIVER_ASSIGNED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED
+          example: REQUESTED
+
+
+    # =====================================================
+    # KẾT QUẢ GỬI YÊU CẦU ĐẶT CHUYẾN
+    #
+    # Dùng cho:
+    # FR06 - Gửi yêu cầu
+    # FR07 - Thông báo tiếp nhận yêu cầu
+    # =====================================================
+
+    TripRequestResponse:
+      type: object
+
+      properties:
+
+        # Mã chuyến xe
+        tripId:
+          type: string
+          description: Mã chuyến xe
+          example: TR001
+
+        # Trạng thái yêu cầu
+        status:
+          type: string
+          description: Trạng thái của yêu cầu đặt chuyến
+          enum:
+            - REQUESTED
+            - ACCEPTED
+            - REJECTED
+          example: REQUESTED
+
+        # Thông báo cho khách hàng
+        message:
+          type: string
+          description: Nội dung thông báo kết quả tiếp nhận
+          example: Trip request has been received
