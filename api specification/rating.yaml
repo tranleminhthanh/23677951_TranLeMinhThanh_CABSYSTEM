@@ -1,0 +1,271 @@
+# =========================================================
+# RATING API
+# Quản lý đánh giá tài xế sau khi hoàn thành chuyến xe
+# Phục vụ FR43 - FR45
+# =========================================================
+
+openapi: 3.0.3
+
+# =========================================================
+# THÔNG TIN API
+# =========================================================
+
+info:
+  title: Rating API
+  description: API quản lý đánh giá tài xế sau khi hoàn thành chuyến xe
+  version: 1.0.0
+
+# Địa chỉ server của hệ thống
+servers:
+  - url: http://localhost:3000/api
+
+
+# =========================================================
+# DANH SÁCH API
+# =========================================================
+
+paths:
+
+  # =======================================================
+  # FR43 - FR45:
+  #
+  # FR43: Cho phép khách hàng đánh giá tài xế sau chuyến đi
+  # FR44: Lưu đánh giá của khách hàng
+  # FR45: Sử dụng thông tin đánh giá để hỗ trợ quản lý
+  # chất lượng dịch vụ/tài xế.
+  # =======================================================
+
+  /trips/{tripId}/rating:
+    post:
+
+      tags:
+        - Rating
+
+      # Tên API hiển thị trên Swagger
+      summary: Rate driver
+
+      # Mô tả chức năng bằng tiếng Việt
+      description: |
+        Cho phép khách hàng đánh giá tài xế
+        sau khi chuyến xe đã hoàn thành.
+
+        Khách hàng có thể:
+        - Chọn số điểm đánh giá từ 1 đến 5
+        - Nhập nhận xét về chuyến đi và tài xế
+
+        Hệ thống lưu lại đánh giá để phục vụ
+        việc quản lý và cải thiện chất lượng dịch vụ.
+
+      operationId: rateDriver
+
+      # ===================================================
+      # THAM SỐ TRÊN URL
+      # ===================================================
+
+      parameters:
+
+        # Mã chuyến xe cần đánh giá
+        - name: tripId
+          in: path
+          required: true
+          description: Mã của chuyến xe cần đánh giá
+          schema:
+            type: string
+          example: TR001
+
+      # ===================================================
+      # DỮ LIỆU ĐÁNH GIÁ KHÁCH HÀNG GỬI LÊN
+      # ===================================================
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+
+            schema:
+              $ref: '#/components/schemas/RatingRequest'
+
+            # Dữ liệu mẫu
+            example:
+              rating: 5
+              comment: "Driver was friendly and drove safely"
+
+      # ===================================================
+      # KẾT QUẢ TRẢ VỀ
+      # ===================================================
+
+      responses:
+
+        # Đánh giá thành công
+        '201':
+          description: Đã lưu đánh giá tài xế thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+
+        # Dữ liệu đánh giá không hợp lệ
+        '400':
+          description: Thông tin đánh giá không hợp lệ
+
+        # Không tìm thấy chuyến xe
+        '404':
+          description: Không tìm thấy chuyến xe
+
+        # Chuyến xe chưa hoàn thành
+        '409':
+          description: Chuyến xe chưa hoàn thành hoặc đã được đánh giá
+
+
+  # =======================================================
+  # XEM ĐÁNH GIÁ CỦA MỘT CHUYẾN XE
+  #
+  # API này hỗ trợ việc kiểm tra lại đánh giá đã lưu.
+  # =======================================================
+
+  /trips/{tripId}/rating:
+    get:
+
+      tags:
+        - Rating
+
+      # Tên API hiển thị trên Swagger
+      summary: Get trip rating
+
+      # Mô tả chức năng
+      description: |
+        Lấy thông tin đánh giá của khách hàng
+        đối với tài xế của một chuyến xe đã hoàn thành.
+
+      operationId: getTripRating
+
+      # ===================================================
+      # THAM SỐ
+      # ===================================================
+
+      parameters:
+
+        # Mã chuyến xe
+        - name: tripId
+          in: path
+          required: true
+          description: Mã của chuyến xe
+          schema:
+            type: string
+          example: TR001
+
+      # ===================================================
+      # KẾT QUẢ
+      # ===================================================
+
+      responses:
+
+        # Tìm thấy đánh giá
+        '200':
+          description: Lấy thông tin đánh giá thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+
+        # Chưa có đánh giá
+        '404':
+          description: Không tìm thấy đánh giá của chuyến xe
+
+
+# =========================================================
+# COMPONENTS
+#
+# Định nghĩa các loại dữ liệu được sử dụng
+# trong Rating API.
+# =========================================================
+
+components:
+
+  schemas:
+
+    # =====================================================
+    # DỮ LIỆU ĐÁNH GIÁ GỬI LÊN
+    #
+    # Dùng khi khách hàng đánh giá tài xế.
+    # =====================================================
+
+    RatingRequest:
+      type: object
+
+      required:
+        - rating
+
+      properties:
+
+        # Điểm đánh giá từ 1 đến 5
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Điểm đánh giá tài xế từ 1 đến 5
+          example: 5
+
+        # Nhận xét của khách hàng
+        comment:
+          type: string
+          description: Nhận xét của khách hàng về tài xế hoặc chuyến đi
+          example: "Driver was friendly and drove safely"
+
+
+    # =====================================================
+    # THÔNG TIN ĐÁNH GIÁ ĐÃ LƯU
+    # =====================================================
+
+    Rating:
+      type: object
+
+      properties:
+
+        # Mã đánh giá
+        ratingId:
+          type: string
+          description: Mã định danh của đánh giá
+          example: RAT001
+
+        # Mã chuyến xe
+        tripId:
+          type: string
+          description: Mã chuyến xe được đánh giá
+          example: TR001
+
+        # Mã tài xế
+        driverId:
+          type: string
+          description: Mã tài xế được đánh giá
+          example: D001
+
+        # Mã khách hàng
+        customerId:
+          type: string
+          description: Mã khách hàng thực hiện đánh giá
+          example: C001
+
+        # Điểm đánh giá
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Điểm đánh giá từ 1 đến 5
+          example: 5
+
+        # Nhận xét
+        comment:
+          type: string
+          description: Nhận xét của khách hàng
+          example: "Driver was friendly and drove safely"
+
+        # Thời gian đánh giá
+        createdAt:
+          type: string
+          format: date-time
+          description: Thời điểm khách hàng thực hiện đánh giá
+          example: "2026-09-10T15:30:00Z"
