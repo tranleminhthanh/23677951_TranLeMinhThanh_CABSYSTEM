@@ -1,0 +1,387 @@
+# =========================================================
+# FARE API
+# Quản lý và tính cước chuyến xe
+# =========================================================
+
+openapi: 3.0.3
+
+# =========================================================
+# THÔNG TIN API
+# =========================================================
+
+info:
+  title: Fare API
+  description: API tính toán và quản lý cước chuyến xe trong hệ thống CAB
+  version: 1.0.0
+
+# Địa chỉ server của hệ thống
+servers:
+  - url: http://localhost:3000/api
+
+
+# =========================================================
+# DANH SÁCH API
+# =========================================================
+
+paths:
+
+  # =======================================================
+  # TÍNH CƯỚC CHUYẾN XE
+  #
+  # Hệ thống tính cước dựa trên thông tin chuyến xe.
+  # Công thức tính cước cụ thể có thể được cấu hình
+  # theo chính sách của hệ thống.
+  # =======================================================
+
+  /trips/{tripId}/fare:
+    post:
+
+      tags:
+        - Fare
+
+      summary: Calculate trip fare
+
+      description: |
+        Tính cước cho một chuyến xe dựa trên
+        thông tin của chuyến.
+
+        Kết quả tính cước bao gồm:
+        - Mã chuyến xe
+        - Khoảng cách chuyến đi
+        - Thời gian chuyến đi
+        - Loại xe
+        - Số tiền cước
+
+      operationId: calculateTripFare
+
+      # ===================================================
+      # THAM SỐ URL
+      # ===================================================
+
+      parameters:
+
+        # Mã chuyến xe
+        - name: tripId
+          in: path
+          required: true
+          description: Mã định danh của chuyến xe
+          schema:
+            type: string
+          example: TR001
+
+      # ===================================================
+      # DỮ LIỆU ĐẦU VÀO
+      # ===================================================
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FareRequest'
+
+            example:
+              distance: 10.5
+              duration: 25
+              vehicleType: CAR
+
+      # ===================================================
+      # KẾT QUẢ TRẢ VỀ
+      # ===================================================
+
+      responses:
+
+        # Tính cước thành công
+        '200':
+          description: Tính cước chuyến xe thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fare'
+
+        # Dữ liệu không hợp lệ
+        '400':
+          description: Thông tin tính cước không hợp lệ
+
+        # Không tìm thấy chuyến xe
+        '404':
+          description: Không tìm thấy chuyến xe
+
+
+  # =======================================================
+  # XEM CƯỚC CHUYẾN XE
+  # =======================================================
+
+    get:
+
+      tags:
+        - Fare
+
+      summary: Get trip fare
+
+      description: |
+        Lấy thông tin cước đã được tính
+        của một chuyến xe.
+
+      operationId: getTripFare
+
+      responses:
+
+        # Lấy thông tin cước thành công
+        '200':
+          description: Lấy thông tin cước thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fare'
+
+        # Chưa có thông tin cước
+        '404':
+          description: Không tìm thấy thông tin cước
+
+
+  # =======================================================
+  # ƯỚC TÍNH CƯỚC TRƯỚC KHI ĐẶT XE
+  #
+  # Chức năng này hỗ trợ khách hàng tham khảo
+  # mức cước trước khi xác nhận chuyến.
+  # =======================================================
+
+  /fares/estimate:
+    post:
+
+      tags:
+        - Fare
+
+      summary: Estimate trip fare
+
+      description: |
+        Ước tính cước chuyến xe dựa trên:
+        - Điểm đón
+        - Điểm đến
+        - Loại xe
+
+        Kết quả chỉ mang tính chất ước tính
+        và có thể được cập nhật theo thông tin
+        thực tế của chuyến xe.
+
+      operationId: estimateTripFare
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FareEstimateRequest'
+
+            example:
+              pickupLocation: "123 Nguyen Hue, District 1"
+              destination: "456 Dien Bien Phu, District 3"
+              vehicleType: CAR
+
+      responses:
+
+        # Ước tính thành công
+        '200':
+          description: Ước tính cước thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FareEstimate'
+
+        # Dữ liệu không hợp lệ
+        '400':
+          description: Thông tin ước tính cước không hợp lệ
+
+
+# =========================================================
+# COMPONENTS
+#
+# Định nghĩa các loại dữ liệu được sử dụng
+# trong Fare API.
+# =========================================================
+
+components:
+
+  schemas:
+
+    # =====================================================
+    # DỮ LIỆU TÍNH CƯỚC
+    # =====================================================
+
+    FareRequest:
+      type: object
+
+      required:
+        - distance
+        - duration
+        - vehicleType
+
+      properties:
+
+        # Khoảng cách chuyến đi
+        distance:
+          type: number
+          format: double
+          minimum: 0
+          description: Khoảng cách của chuyến xe tính theo kilomet
+          example: 10.5
+
+        # Thời gian chuyến đi
+        duration:
+          type: integer
+          minimum: 0
+          description: Thời gian chuyến xe tính theo phút
+          example: 25
+
+        # Loại phương tiện
+        vehicleType:
+          type: string
+          description: Loại phương tiện được sử dụng
+          enum:
+            - CAR
+            - MOTORBIKE
+          example: CAR
+
+
+    # =====================================================
+    # THÔNG TIN CƯỚC
+    # =====================================================
+
+    Fare:
+      type: object
+
+      properties:
+
+        # Mã cước
+        fareId:
+          type: string
+          description: Mã định danh của thông tin cước
+          example: FARE001
+
+        # Mã chuyến xe
+        tripId:
+          type: string
+          description: Mã chuyến xe
+          example: TR001
+
+        # Khoảng cách
+        distance:
+          type: number
+          format: double
+          description: Khoảng cách chuyến xe tính theo kilomet
+          example: 10.5
+
+        # Thời gian
+        duration:
+          type: integer
+          description: Thời gian chuyến xe tính theo phút
+          example: 25
+
+        # Loại xe
+        vehicleType:
+          type: string
+          description: Loại phương tiện của chuyến xe
+          enum:
+            - CAR
+            - MOTORBIKE
+          example: CAR
+
+        # Số tiền cước
+        amount:
+          type: number
+          format: double
+          description: Tổng số tiền cước của chuyến xe
+          example: 150000
+
+        # Đơn vị tiền tệ
+        currency:
+          type: string
+          description: Đơn vị tiền tệ sử dụng để tính cước
+          example: VND
+
+
+    # =====================================================
+    # DỮ LIỆU ƯỚC TÍNH CƯỚC
+    # =====================================================
+
+    FareEstimateRequest:
+      type: object
+
+      required:
+        - pickupLocation
+        - destination
+        - vehicleType
+
+      properties:
+
+        # Điểm đón
+        pickupLocation:
+          type: string
+          description: Địa điểm khách hàng muốn được đón
+          example: "123 Nguyen Hue, District 1"
+
+        # Điểm đến
+        destination:
+          type: string
+          description: Địa điểm khách hàng muốn đến
+          example: "456 Dien Bien Phu, District 3"
+
+        # Loại xe
+        vehicleType:
+          type: string
+          description: Loại phương tiện khách hàng lựa chọn
+          enum:
+            - CAR
+            - MOTORBIKE
+          example: CAR
+
+
+    # =====================================================
+    # KẾT QUẢ ƯỚC TÍNH CƯỚC
+    # =====================================================
+
+    FareEstimate:
+      type: object
+
+      properties:
+
+        # Khoảng cách ước tính
+        estimatedDistance:
+          type: number
+          format: double
+          description: Khoảng cách dự kiến của chuyến xe tính theo kilomet
+          example: 10.5
+
+        # Thời gian ước tính
+        estimatedDuration:
+          type: integer
+          description: Thời gian dự kiến của chuyến xe tính theo phút
+          example: 25
+
+        # Loại xe
+        vehicleType:
+          type: string
+          description: Loại phương tiện được lựa chọn
+          enum:
+            - CAR
+            - MOTORBIKE
+          example: CAR
+
+        # Cước ước tính
+        estimatedAmount:
+          type: number
+          format: double
+          description: Số tiền cước dự kiến
+          example: 150000
+
+        # Đơn vị tiền tệ
+        currency:
+          type: string
+          description: Đơn vị tiền tệ
+          example: VND
