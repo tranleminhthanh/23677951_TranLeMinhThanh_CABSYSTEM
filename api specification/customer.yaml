@@ -1,0 +1,688 @@
+# =========================================================
+# CUSTOMER API
+# Quản lý thông tin và tài khoản khách hàng
+# =========================================================
+
+openapi: 3.0.3
+
+# =========================================================
+# THÔNG TIN API
+# =========================================================
+
+info:
+  title: Customer API
+  description: API quản lý tài khoản, thông tin và lịch sử chuyến đi của khách hàng
+  version: 1.0.0
+
+# Địa chỉ server của hệ thống
+servers:
+  - url: http://localhost:3000/api
+
+
+# =========================================================
+# DANH SÁCH API
+# =========================================================
+
+paths:
+
+  # =======================================================
+  # ĐĂNG KÝ TÀI KHOẢN KHÁCH HÀNG
+  #
+  # Chức năng:
+  # - Đăng ký tài khoản
+  # =======================================================
+
+  /customers/register:
+    post:
+
+      tags:
+        - Customer
+
+      # Tên API hiển thị trên Swagger
+      summary: Register customer
+
+      # Mô tả chức năng bằng tiếng Việt
+      description: |
+        Cho phép khách hàng đăng ký tài khoản mới
+        bằng cách cung cấp các thông tin cần thiết.
+
+      operationId: registerCustomer
+
+      # ---------------------------------------------------
+      # DỮ LIỆU ĐĂNG KÝ
+      # ---------------------------------------------------
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+
+            example:
+              name: "Nguyen Van A"
+              phone: "0901234567"
+              email: "customer@example.com"
+              password: "123456"
+
+      # ---------------------------------------------------
+      # KẾT QUẢ
+      # ---------------------------------------------------
+
+      responses:
+
+        # Đăng ký thành công
+        '201':
+          description: Đăng ký tài khoản thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+        # Dữ liệu không hợp lệ
+        '400':
+          description: Thông tin đăng ký không hợp lệ
+
+        # Tài khoản đã tồn tại
+        '409':
+          description: Tài khoản đã tồn tại
+
+
+  # =======================================================
+  # ĐĂNG NHẬP
+  # =======================================================
+
+  /customers/login:
+    post:
+
+      tags:
+        - Customer
+
+      summary: Login customer
+
+      description: |
+        Cho phép khách hàng đăng nhập vào hệ thống
+        bằng thông tin tài khoản đã đăng ký.
+
+      operationId: loginCustomer
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+
+            example:
+              phone: "0901234567"
+              password: "123456"
+
+      responses:
+
+        # Đăng nhập thành công
+        '200':
+          description: Đăng nhập thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+        # Sai thông tin đăng nhập
+        '401':
+          description: Thông tin đăng nhập không chính xác
+
+
+  # =======================================================
+  # XÁC THỰC TÀI KHOẢN
+  # =======================================================
+
+  /customers/{customerId}/verify:
+    post:
+
+      tags:
+        - Customer
+
+      summary: Verify customer
+
+      description: |
+        Xác thực tài khoản khách hàng
+        sau khi khách hàng đăng ký tài khoản.
+
+      operationId: verifyCustomer
+
+      # ---------------------------------------------------
+      # THAM SỐ URL
+      # ---------------------------------------------------
+
+      parameters:
+
+        # Mã khách hàng
+        - name: customerId
+          in: path
+          required: true
+          description: Mã định danh của khách hàng
+          schema:
+            type: string
+          example: C001
+
+      # ---------------------------------------------------
+      # MÃ XÁC THỰC
+      # ---------------------------------------------------
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+
+            example:
+              verificationCode: "123456"
+
+      responses:
+
+        # Xác thực thành công
+        '200':
+          description: Xác thực tài khoản thành công
+
+        # Mã xác thực không hợp lệ
+        '400':
+          description: Mã xác thực không hợp lệ
+
+        # Không tìm thấy khách hàng
+        '404':
+          description: Không tìm thấy khách hàng
+
+
+  # =======================================================
+  # XEM THÔNG TIN KHÁCH HÀNG
+  # =======================================================
+
+  /customers/{customerId}:
+    get:
+
+      tags:
+        - Customer
+
+      summary: Get customer profile
+
+      description: |
+        Lấy thông tin tài khoản và thông tin cá nhân
+        của một khách hàng.
+
+      operationId: getCustomerProfile
+
+      parameters:
+
+        # Mã khách hàng
+        - name: customerId
+          in: path
+          required: true
+          description: Mã định danh của khách hàng
+          schema:
+            type: string
+          example: C001
+
+      responses:
+
+        # Lấy thông tin thành công
+        '200':
+          description: Lấy thông tin khách hàng thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+        # Không tìm thấy khách hàng
+        '404':
+          description: Không tìm thấy khách hàng
+
+
+    # =====================================================
+    # CẬP NHẬT THÔNG TIN CÁ NHÂN
+    # =====================================================
+
+    put:
+
+      tags:
+        - Customer
+
+      summary: Update customer profile
+
+      description: |
+        Cho phép khách hàng cập nhật
+        thông tin cá nhân của mình.
+
+      operationId: updateCustomerProfile
+
+      parameters:
+
+        # Mã khách hàng
+        - name: customerId
+          in: path
+          required: true
+          description: Mã định danh của khách hàng
+          schema:
+            type: string
+          example: C001
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomerRequest'
+
+            example:
+              name: "Nguyen Van B"
+              phone: "0912345678"
+              email: "customer@example.com"
+
+      responses:
+
+        # Cập nhật thành công
+        '200':
+          description: Cập nhật thông tin khách hàng thành công
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+        # Dữ liệu không hợp lệ
+        '400':
+          description: Thông tin cập nhật không hợp lệ
+
+        # Không tìm thấy khách hàng
+        '404':
+          description: Không tìm thấy khách hàng
+
+
+  # =======================================================
+  # XEM LỊCH SỬ CHUYẾN ĐI
+  # =======================================================
+
+  /customers/{customerId}/trips:
+    get:
+
+      tags:
+        - Customer
+
+      summary: Get customer trip history
+
+      description: |
+        Lấy danh sách các chuyến xe
+        mà khách hàng đã thực hiện.
+
+      operationId: getCustomerTripHistory
+
+      parameters:
+
+        # Mã khách hàng
+        - name: customerId
+          in: path
+          required: true
+          description: Mã định danh của khách hàng
+          schema:
+            type: string
+          example: C001
+
+      responses:
+
+        # Lấy lịch sử thành công
+        '200':
+          description: Lấy lịch sử chuyến đi thành công
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TripHistory'
+
+        # Không tìm thấy khách hàng
+        '404':
+          description: Không tìm thấy khách hàng
+
+
+  # =======================================================
+  # XEM THÔNG TIN GIAO DỊCH LIÊN QUAN ĐẾN CHUYẾN ĐI
+  # =======================================================
+
+  /customers/{customerId}/transactions:
+    get:
+
+      tags:
+        - Customer
+
+      summary: Get customer transactions
+
+      description: |
+        Lấy thông tin các giao dịch
+        liên quan đến những chuyến xe của khách hàng.
+
+      operationId: getCustomerTransactions
+
+      parameters:
+
+        # Mã khách hàng
+        - name: customerId
+          in: path
+          required: true
+          description: Mã định danh của khách hàng
+          schema:
+            type: string
+          example: C001
+
+      responses:
+
+        # Lấy giao dịch thành công
+        '200':
+          description: Lấy thông tin giao dịch thành công
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+
+        # Không tìm thấy khách hàng
+        '404':
+          description: Không tìm thấy khách hàng
+
+
+# =========================================================
+# COMPONENTS
+#
+# Định nghĩa các loại dữ liệu được sử dụng
+# trong Customer API.
+# =========================================================
+
+components:
+
+  schemas:
+
+    # =====================================================
+    # THÔNG TIN KHÁCH HÀNG
+    # =====================================================
+
+    Customer:
+      type: object
+
+      properties:
+
+        # Mã khách hàng
+        customerId:
+          type: string
+          description: Mã định danh của khách hàng
+          example: C001
+
+        # Họ và tên
+        name:
+          type: string
+          description: Họ và tên khách hàng
+          example: "Nguyen Van A"
+
+        # Số điện thoại
+        phone:
+          type: string
+          description: Số điện thoại khách hàng
+          example: "0901234567"
+
+        # Email
+        email:
+          type: string
+          format: email
+          description: Địa chỉ email của khách hàng
+          example: "customer@example.com"
+
+        # Trạng thái tài khoản
+        status:
+          type: string
+          description: Trạng thái tài khoản khách hàng
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - UNVERIFIED
+          example: ACTIVE
+
+
+    # =====================================================
+    # DỮ LIỆU ĐĂNG KÝ
+    # =====================================================
+
+    RegisterRequest:
+      type: object
+
+      required:
+        - name
+        - phone
+        - password
+
+      properties:
+
+        # Họ và tên
+        name:
+          type: string
+          description: Họ và tên khách hàng
+          example: "Nguyen Van A"
+
+        # Số điện thoại
+        phone:
+          type: string
+          description: Số điện thoại dùng để đăng ký
+          example: "0901234567"
+
+        # Email
+        email:
+          type: string
+          format: email
+          description: Email của khách hàng
+          example: "customer@example.com"
+
+        # Mật khẩu
+        password:
+          type: string
+          format: password
+          description: Mật khẩu đăng nhập
+          example: "123456"
+
+
+    # =====================================================
+    # DỮ LIỆU ĐĂNG NHẬP
+    # =====================================================
+
+    LoginRequest:
+      type: object
+
+      required:
+        - phone
+        - password
+
+      properties:
+
+        # Số điện thoại
+        phone:
+          type: string
+          description: Số điện thoại đăng nhập
+          example: "0901234567"
+
+        # Mật khẩu
+        password:
+          type: string
+          format: password
+          description: Mật khẩu đăng nhập
+          example: "123456"
+
+
+    # =====================================================
+    # KẾT QUẢ ĐĂNG NHẬP
+    # =====================================================
+
+    LoginResponse:
+      type: object
+
+      properties:
+
+        # Mã khách hàng
+        customerId:
+          type: string
+          description: Mã khách hàng sau khi đăng nhập
+          example: C001
+
+        # Token xác thực
+        accessToken:
+          type: string
+          description: Token dùng để xác thực các request tiếp theo
+          example: "eyJhbGciOiJIUzI1NiIs..."
+
+        # Trạng thái đăng nhập
+        status:
+          type: string
+          description: Kết quả đăng nhập
+          example: SUCCESS
+
+
+    # =====================================================
+    # DỮ LIỆU XÁC THỰC
+    # =====================================================
+
+    VerifyRequest:
+      type: object
+
+      required:
+        - verificationCode
+
+      properties:
+
+        # Mã xác thực
+        verificationCode:
+          type: string
+          description: Mã xác thực tài khoản khách hàng
+          example: "123456"
+
+
+    # =====================================================
+    # DỮ LIỆU CẬP NHẬT THÔNG TIN
+    # =====================================================
+
+    UpdateCustomerRequest:
+      type: object
+
+      properties:
+
+        # Họ và tên mới
+        name:
+          type: string
+          description: Họ và tên mới của khách hàng
+          example: "Nguyen Van B"
+
+        # Số điện thoại mới
+        phone:
+          type: string
+          description: Số điện thoại mới của khách hàng
+          example: "0912345678"
+
+        # Email mới
+        email:
+          type: string
+          format: email
+          description: Email mới của khách hàng
+          example: "customer@example.com"
+
+
+    # =====================================================
+    # LỊCH SỬ CHUYẾN ĐI
+    # =====================================================
+
+    TripHistory:
+      type: object
+
+      properties:
+
+        # Mã chuyến
+        tripId:
+          type: string
+          description: Mã của chuyến xe
+          example: TR001
+
+        # Điểm đón
+        pickupLocation:
+          type: string
+          description: Địa điểm đón khách
+          example: "123 Nguyen Hue, District 1"
+
+        # Điểm đến
+        destination:
+          type: string
+          description: Địa điểm trả khách
+          example: "456 Dien Bien Phu, District 3"
+
+        # Trạng thái chuyến
+        status:
+          type: string
+          description: Trạng thái của chuyến xe
+          example: COMPLETED
+
+        # Thời gian chuyến
+        completedAt:
+          type: string
+          format: date-time
+          description: Thời điểm chuyến xe hoàn thành
+          example: "2026-09-10T15:30:00Z"
+
+
+    # =====================================================
+    # THÔNG TIN GIAO DỊCH
+    # =====================================================
+
+    Transaction:
+      type: object
+
+      properties:
+
+        # Mã giao dịch
+        transactionId:
+          type: string
+          description: Mã định danh của giao dịch
+          example: TXN001
+
+        # Mã chuyến xe
+        tripId:
+          type: string
+          description: Mã chuyến xe liên quan đến giao dịch
+          example: TR001
+
+        # Số tiền
+        amount:
+          type: number
+          format: double
+          description: Số tiền của giao dịch
+          example: 150000
+
+        # Phương thức thanh toán
+        paymentMethod:
+          type: string
+          description: Phương thức thanh toán được sử dụng
+          enum:
+            - CASH
+            - ELECTRONIC
+          example: ELECTRONIC
+
+        # Trạng thái giao dịch
+        status:
+          type: string
+          description: Trạng thái của giao dịch
+          enum:
+            - SUCCESS
+            - FAILED
+            - PENDING
+          example: SUCCESS
